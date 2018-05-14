@@ -1,0 +1,184 @@
+html {
+    font-family: sans-serif;
+    -ms-text-size-adjust: 200%;
+    -webkit-text-size-adjust: 200%;
+}
+thead {
+	background-color: orange;
+	}
+tbody  {
+    border: 1px ridge IndianRed;
+	border-radius: 5px;
+
+		}
+th  {
+    border: 1px ridge IndianRed;
+	border-radius: 5px;
+	background-color: lightgrey;
+		}
+td {
+    border: 1px ridge IndianRed;
+	border-radius: 5px;
+	width:1000px;
+    height:100px;
+		}
+body {
+    margin: 5;
+}
+p{
+
+	border-top-style: solid;
+    border-right-style: dotted;
+    border-bottom-style: solid;
+    border-left-style: dotted;
+	border-color:orange;
+}
+.container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+#footer {
+    padding:10px 0;
+    -webkit-box-shadow: 0 -2px 2px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+#footer p {
+	margin:0;
+}
+#wrapper{
+    padding:50px 0;
+}
+.clearfix:after,  .container:after{
+    clear: both;
+}
+
+.formcontainer{
+    width:50%;margin:0 auto;
+}
+.form-serialize {
+    padding: 20px 30px 20px 30px;
+    font-size: 20px;
+    color: #777;
+    text-shadow: 1px 1px 1px #FFF;
+    border:1px solid #DDD; 
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+.form-serialize h1 {
+    font-size: 30px ;
+    padding: 0px 0px 10px 40px;
+    display: block;
+    border-bottom: 1px solid #DADADA;
+    margin: -10px -30px 30px -30px;
+    color: #777;
+}
+.form-serialize label {
+    display: block;
+    margin: 0px 0px 3px;
+}
+.form-serialize label>span {
+    float: left;
+    width: 20%;
+    text-align: right;
+    padding-right: 10px;
+    margin-top: 10px;
+    color: #333;
+    font-weight: bold;
+}
+.form-serialize input[type="text"], .form-serialize textarea, .form-serialize select{
+	font-size: 40px ;
+    border: 1px solid #CCC;
+    color: #777;
+    height: 50px;
+    line-height:50px;
+    margin-bottom: 1px;
+    margin-right: 3px;
+    margin-top: 1px;
+    outline: 0 none;
+    padding: 5px 0px 5px 5px;
+    width: 50%;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;    
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.form-serialize input[type="text2"] {
+	font-size: 25px ;
+    border: 1px solid #CCC;
+    color: #171;
+	height: 85%;
+	width: 98%;
+    line-height:50px;
+    margin-bottom: 16px;
+    margin-right: 6px;
+    margin-top: 2px;
+    outline: 0 none;
+    padding: 5px 0px 5px 5px;
+    word-wrap: break-word;
+	white-space:normal;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;    
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.form-serialize input[type="text3"] {
+	font-size: 20px ;
+    border: 1px solid #CCC;
+    color: #990;
+	height: 76%;
+	width: 94%;
+    line-height:50px;
+    margin-bottom: 6px;
+    margin-right: 6px;
+    margin-top: 2px;
+    outline: 0 none;
+    padding: 5px 0px 5px 5px;
+    word-wrap: break-word;
+	white-space:normal;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;    
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.form-serialize textarea{
+    height:150px;
+    padding: 10px 0px 0px 5px;
+    width: 90%;
+}
+.form-serialize.button {
+    background: #FFF;
+    border: 1px solid #CCC;
+    padding: 10px 25px 10px 25px;
+    color: #333;
+    border-radius: 4px;
+}
+.form-serialize .button:hover {
+    color: #333;
+    background-color: #EBEBEB;
+    border-color: #ADADAD;
+}
+.alert {
+padding: 15px;
+margin-bottom: 20px;
+border: 1px solid transparent;
+border-radius: 4px;
+}
+.alert-success {
+background-color: #dff0d8;
+border-color: #d6e9c6;
+color: #3c763d;
+}
+.alert-danger {
+background-color: #f2dede;
+border-color: #ebccd1;
+color: #a94442;
+}

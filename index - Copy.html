@@ -1,0 +1,260 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1">
+    <meta charset="utf-8" />
+    <title>AIRPORT CHECK</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery-latest.js" type="text/javascript"></script>
+    <script src="js/jquery.add-input-area.js"></script>
+    <script src="js/form-serialize.js"></script>
+    <script src="js/handlebars-v4.0.11.js"></script>
+    <script id="tmpRunway" type="text/x-handlebars-template">
+        <table class="table rowTable">
+            <tbody class="list_var">
+                <tr>
+                    <th>RWY</th>
+                    <th>TWY NO</th>
+                    <th>TORA</th>
+                    <th>TODA</th>
+                    <th>ASDA</th>
+                    <th>WIDTH</th>
+                    <th>SLOPE%</th>
+                    <th>LDA</th>
+                    <th>M/A %</th>
+                    <th>G/A Alt.</th>
+                </tr>
+                <tr align="center">
+                    <td><input id="rwy_1" type="text" maxlength="3" style="width:75px" readonly="readonly" value="{{designator}}" /></td>
+                    <td><input id="twy_1" type="text" maxlength="6" style="width:250px" readonly="readonly" value="{{position}}" /></td>
+                    <td><input id="tora_1" type="text" maxlength="4" style="width:90px" readonly="readonly" value="{{tora}}" /></td>
+                    <td><input id="toda_1" type="text" maxlength="4" style="width:90px" readonly="readonly" value="{{toda}}" /></td>
+                    <td><input id="asda_1" type="text" maxlength="4" style="width:90px" readonly="readonly" value="{{asda}}" /></td>
+                    <td><input id="width_1" type="text" maxlength="2" style="width:50px" readonly="readonly" value="{{width}}" /></td>
+                    <td><input id="slope_1" type="text" maxlength="5" style="width:95px" readonly="readonly" value="{{slope}}" /></td>
+                    <td><input id="lda_1" type="text" maxlength="4" style="width:90px" readonly="readonly" value="{{lda}}" /></td>
+                    <td><input id="ma_1" type="text" maxlength="3" style="width:65px" readonly="readonly" value="{{mapp_grad}}" /></td>
+                    <td><input id="ga_1" type="text" maxlength="5" style="width:120px" readonly="readonly" value="{{mapp_ht}}" /></td>
+                </tr>
+                <tr>
+                    <th colspan="6">EOSID TEXT :</th>
+                    <th colspan="4">EOSID & G/A ALTITUDE :</th>
+                </tr>
+                <tr align="right" class="list_var">
+                    <td colspan="6" rowspan="2"><input id="eosid_1" type="text2" maxlength="1000" readonly=readonly value="{{eosid}}" /></td>
+                    <td colspan="4">
+                        EOSID SPECIAL CHART REQUIRED ?
+                        <select id="selEosid_1" style="width:120px">
+                            <option value="NO">NO</option>
+                            <option value="YES">YES</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr align="right" class="list_var">
+                    <td colspan="4">
+                        G/A ALTITUDE IS SUITABLE FOR ACCELERATION ?
+                        <select id="selGa_1" style="width:120px">
+                            <option value="YES">YES</option>
+                            <option value="NO">NO</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+    <script>
+        function Runway(_designator, _position, _tora, _toda, _asda, _width, _slope, _lda, _mapp_grad, _mapp_ht, _eosid) {
+            this.designator = _designator;
+            this.position = _position;
+            this.tora = _tora;
+            this.toda = _toda;
+            this.asda = _asda;
+            this.width = _width;
+            this.slope = _slope;
+            this.lda = _lda;
+            this.mapp_grad = _mapp_grad;
+            this.mapp_ht = _mapp_ht;
+            this.eosid = _eosid;
+        }
+
+        var template;
+        $(function () {
+            var source = document.getElementById("tmpRunway").innerHTML;
+            template = Handlebars.compile(source);
+
+            $('#list').addInputArea({ area_del: '.del-area' });
+            // $("form").hide();
+            $.ajax({
+                type: "GET",
+                url: "AirportFile.xml",
+                dataType: "xml",
+                success: xmlParser
+            });
+        });
+
+        function xmlParser(xml) {
+            window.airportXml = xml;
+            window.$airportXml = $(xml);
+
+            $(xml).find("airport").each(function () {
+                $("<option value=" + $(this).find("icao").text() + ">" +
+                $(this).find("icao").text() + " | " +
+                $(this).find("_iata").text() + " | " +
+                $(this).find("name").text() + "</option>").appendTo("#selAirport");
+            })
+
+        }
+
+        function onChangeAirport(selAirport) {
+            //$("form").show();
+            var icao = $(selAirport).val();
+            var $selectedAirport = window.$airportXml.find("airport[icao=" + icao + "]");
+            var arrAllRunways = $selectedAirport.find("runway").toArray();
+
+            //var arrToSectionRunways = $selectedAirport.find("to_section runway").toArray();
+            //var arrLdgSectionRunways = $selectedAirport.find("ldg_section runway").toArray();
+
+            // ilk .tableRow kalana kadar tüm .tableRow ları sil
+            removeRowTables();
+
+            for (var i = 0; i < arrAllRunways.length; i++) {
+                var $runway = $(arrAllRunways[i]);
+                // buldugum runway sayısı kadar satırları çoklar
+                var $createdNewRowTable = createRowTable();
+                // her satıra her bir runway bilgisini ve LDA için lda_xx bilgilerini yaz
+                $createdNewRowTable.find("input[id^='rwy']").first().val($runway.find("designator").text());
+
+            }
+
+            //$("#rwy_1").val($selectedAirport.find("runway:eq(1) designator").text().trim());
+            //$("#twy_1").val($selectedAirport.find("runway:eq(1) position").text().trim());
+            //$("#tora_1").val($selectedAirport.find("runway:eq(1) tora").text().trim());
+            //$("#toda_1").val($selectedAirport.find("runway:eq(1) toda").text().trim());
+            //$("#asda_1").val($selectedAirport.find("runway:eq(1) asda").text().trim());
+            //$("#width_1").val($selectedAirport.find("runway:eq(1) width").text().trim());
+            //$("#slope_1").val($selectedAirport.find("runway:eq(1) slope").text().trim());
+            //$("#lda_1").val($selectedAirport.find("runway:eq(1) lda").text().trim());
+            //$("#ma_1").val($selectedAirport.find("runway:eq(1) mapp_grad").text().trim());
+            //$("#ga_1").val($selectedAirport.find("runway:eq(1) mapp_ht").text().trim());
+            //$("#eosid_1").val($selectedAirport.find("runway:eq(1) eosid").text().trim());
+
+            var designator = $selectedAirport.find("runway:eq(1) designator").text().trim();
+            var position = $selectedAirport.find("runway:eq(1) position").text().trim();
+            var tora = $selectedAirport.find("runway:eq(1) tora").text().trim();
+            var toda = $selectedAirport.find("runway:eq(1) toda").text().trim();
+            var asda = $selectedAirport.find("runway:eq(1) asda").text().trim();
+            var width = $selectedAirport.find("runway:eq(1) width").text().trim();
+            var slope = $selectedAirport.find("runway:eq(1) slope").text().trim();
+            var lda = $selectedAirport.find("runway:eq(1) lda").text().trim();
+            var mapp_grad = $selectedAirport.find("runway:eq(1) mapp_grad").text().trim();
+            var mapp_ht = $selectedAirport.find("runway:eq(1) mapp_ht").text().trim();
+            var eosid = $selectedAirport.find("runway:eq(1) eosid").text().trim();
+
+            var runway = new Runway(designator, position, tora, toda, asda, width, slope, lda, mapp_grad, mapp_ht, eosid);
+            var html_output = template(runway);
+            $("#htmlRunway").html(html_output);
+        }
+
+        function removeRowTables() {
+            var $firstTableRow = $(".rowTable").first();
+            $(".rowTable").remove();
+            $firstTableRow.insertBefore("#footerTable");
+        }
+
+        function createRowTable() {
+            var countRowTable = $(".rowTable").length;
+            var cloneRowTableIndex = countRowTable + 1;
+            var newRowTable = $(".rowTable").first().clone();
+            var arrInput = newRowTable.find("input,select").toArray();
+            $.each(arrInput, function (idx, input) {
+                console.log($(input).attr("id"));
+                var id = $(input).attr("id");
+                var idPrefix = id.substr(0, id.indexOf('_') + 1);
+                $(input).attr("id", (idPrefix + cloneRowTableIndex));
+            });
+            newRowTable.insertBefore("#footerTable");
+            return newRowTable;
+        }
+
+    </script>
+</head>
+<body>
+    <h1 align="center">
+        <u>NEWLY ADDED AIRPORT :</u>
+        <select onchange="onChangeAirport(this)" id="selAirport" style="width:750px; font-size:20pt; color:purple;background: cyan"></select>
+    </h1>
+    <form id="form1" class="form-serialize">
+
+        <table class="table rowTable">
+            <tbody class="list_var">
+                <tr>
+                    <th>RWY</th>
+                    <th>TWY NO</th>
+                    <th>TORA</th>
+                    <th>TODA</th>
+                    <th>ASDA</th>
+                    <th>WIDTH</th>
+                    <th>SLOPE%</th>
+                    <th>LDA</th>
+                    <th>M/A %</th>
+                    <th>G/A Alt.</th>
+                </tr>
+                <tr align="center">
+                    <td><input id="rwy_1" type="text" maxlength="3" style="width:75px" readonly=readonly /></td>
+                    <td><input id="twy_1" type="text" maxlength="6" style="width:250px" readonly=readonly /></td>
+                    <td><input id="tora_1" type="text" maxlength="4" style="width:90px" readonly=readonly /></td>
+                    <td><input id="toda_1" type="text" maxlength="4" style="width:90px" readonly=readonly /></td>
+                    <td><input id="asda_1" type="text" maxlength="4" style="width:90px" readonly=readonly /></td>
+                    <td><input id="width_1" type="text" maxlength="2" style="width:50px" readonly=readonly /></td>
+                    <td><input id="slope_1" type="text" maxlength="5" style="width:95px" readonly=readonly /></td>
+                    <td><input id="lda_1" type="text" maxlength="4" style="width:90px" readonly=readonly /></td>
+                    <td><input id="ma_1" type="text" maxlength="3" style="width:65px" readonly=readonly /></td>
+                    <td><input id="ga_1" type="text" maxlength="5" style="width:120px" readonly=readonly /></td>
+                </tr>
+                <tr>
+                    <th colspan="6">EOSID TEXT :</th>
+                    <th colspan="4">EOSID & G/A ALTITUDE :</th>
+                </tr>
+                <tr align="right" class="list_var">
+                    <td colspan="6" rowspan="2"><input id="eosid_1" type="text2" maxlength="1000" readonly=readonly /></td>
+                    <td colspan="4">
+                        EOSID SPECIAL CHART REQUIRED ?
+                        <select id="selEosid_1" style="width:120px">
+                            <option value="NO">NO</option>
+                            <option value="YES">YES</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr align="right" class="list_var">
+                    <td colspan="4">
+                        G/A ALTITUDE IS SUITABLE FOR ACCELERATION ?
+                        <select id="selGa_1" style="width:120px">
+                            <option value="YES">YES</option>
+                            <option value="NO">NO</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr/>
+        <div id="htmlRunway"></div>
+        <table id="footerTable" style="margin:10px 0;border-top:5px solid orange">
+            <tr>
+                <th>FINDINGS</th>
+                <th>LHS TRACKSPACE RECORD NO</th>
+                <th>RESOLUTION</th>
+                <th>DATE</th>
+            </tr>
+            <tbody>
+                <tr align="center">
+                    <td><input type="text3" maxlength="1000" /></td>
+                    <td><input type="text3" maxlength="9" value="LIPXQ-" /></td>
+                    <td><input type="text3" maxlength="1000" value="Fixed with TO:XX&LA:XX / AODB dated 12.Apr.2018" /></td>
+                    <td><input id="demo" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <input type="submit" value="Save & Send" name="submit" style="height:40px;width:120px" />
+</body>
+</html>
